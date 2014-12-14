@@ -3,13 +3,13 @@ var tokener = function(str) {
   var currPos = 0;
   var curl = 0;
   var stillSearching = true;
-  var toIgnore = false;
+  var ignoreUntil = false;
   var blocks = [];
 
   while (stillSearching && currPos <= str.length) {
     var currChar = str.charAt(currPos);
     // console.log("Looking at: " + currPos + currChar);
-    if (!toIgnore) {
+    if (!ignoreUntil) {
       switch(currChar) {
         case '{':
           if (startIndex === -1) {
@@ -23,12 +23,19 @@ var tokener = function(str) {
           break;
         case '"':
         case '\'':
-          toIgnore = currChar;
+          ignoreUntil = currChar;
           break;
+        case '/':
+          var nextChar = str.charAt(currPos + 1);
+          if (nextChar === '/') {
+            ignoreUntil = '\n';
+          } else if (nextChar === '*') {
+            ignoreUntil = '*/';
+          }
       }
     } else {
-      if (currChar === toIgnore) {
-        toIgnore = false;
+      if (currChar === ignoreUntil) {
+        ignoreUntil = false;
       }
     }
     currPos++;
@@ -36,7 +43,9 @@ var tokener = function(str) {
       stillSearching = false;
     }
   }
-  console.log("Done");
+  if (curl > 0) {
+    throw new Error("Did you miss a curly?");
+  }
   return str.substring(startIndex, currPos);
 }
 
