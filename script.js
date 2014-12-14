@@ -1,50 +1,43 @@
-var fn = function() {
-  var block = "header {\n div.header '}' } footer {\n div.footer }",
-      startIndex = block.indexOf("{") /* index of first bracket */,
-      currPos = startIndex,
-      openBrackets = 0,
-      stillSearching = true,
-      waitForChar = false;
+var tokener = function(str) {
+  var startIndex = -1;
+  var currPos = 0;
+  var curl = 0;
+  var stillSearching = true;
+  var toIgnore = false;
+  var blocks = [];
 
-  while (stillSearching && currPos <= block.length) {
-    var currChar = block.charAt(currPos);
-
-    if (!waitForChar) {
-      switch (currChar) {
+  while (stillSearching && currPos <= str.length) {
+    var currChar = str.charAt(currPos);
+    // console.log("Looking at: " + currPos + currChar);
+    if (!toIgnore) {
+      switch(currChar) {
         case '{':
-          openBrackets++; 
+          if (startIndex === -1) {
+            startIndex = currPos;
+            continue;
+          } else
+            curl++;
           break;
         case '}':
-          openBrackets--;
+          curl--;
           break;
         case '"':
-        case "'":
-          waitForChar = currChar;
+        case '\'':
+          toIgnore = currChar;
           break;
-        case '/':
-          var nextChar = block.charAt(currPos + 1);
-          if (nextChar === '/') {
-            waitForChar = '\n';
-          } else if (nextChar === '*') {
-            waitForChar = '*/';
-          }
       }
     } else {
-      if (currChar === waitForChar) {
-        if (waitForChar === '"' || waitForChar === "'") {
-          block.charAt(currPos - 1) !== '\\' && (waitForChar = false);
-        } else {
-          waitForChar = false;
-        }
-      } else if (currChar === '*') {
-        block.charAt(currPos + 1) === '/' && (waitForChar = false);
+      if (currChar === toIgnore) {
+        toIgnore = false;
       }
     }
-
-    currPos++ 
-    if (openBrackets === 0) { stillSearching = false; }
+    currPos++;
+    if (curl === 0 && startIndex > 0) {
+      stillSearching = false;
+    }
   }
-
-  console.log(block.substring(startIndex , currPos)); // 
+  console.log("Done");
+  return str.substring(startIndex, currPos);
 }
-fn();
+
+console.log(tokener("header {\n div.header '}' } footer {\n div.footer }"));
