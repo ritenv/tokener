@@ -40,13 +40,15 @@ var tokener = function(str) {
     }
     currPos++;
     if (curl === 0 && startIndex > 0) {
-      stillSearching = false;
+      blocks.push(str.substring(startIndex, currPos));
+      startIndex = currPos;
+      //stillSearching = false;
     }
   }
   if (curl > 0) {
     throw new Error("Did you miss a curly?");
   }
-  return str.substring(startIndex, currPos);
+  return blocks;
 }
 
 console.log(tokener("header {\n div.header '}' } footer {\n div.footer }"));
