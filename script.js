@@ -5,6 +5,7 @@ var tokener = function(str) {
   var stillSearching = true;
   var ignoreUntil = false;
   var blocks = [];
+  var lastNewLine = -1;
 
   while (stillSearching && currPos <= str.length) {
     var currChar = str.charAt(currPos);
@@ -32,23 +33,39 @@ var tokener = function(str) {
           } else if (nextChar === '*') {
             ignoreUntil = '*/';
           }
+          break;
+        case '\n':
+          lastNewLine = currPos;
+          break;
       }
     } else {
       if (currChar === ignoreUntil) {
         ignoreUntil = false;
       }
     }
-    currPos++;
     if (curl === 0 && startIndex > 0) {
-      blocks.push(str.substring(startIndex, currPos));
-      startIndex = currPos;
-      //stillSearching = false;
+      var block = str.substring(startIndex+1, currPos-1);
+      var tag = str.substring(0, startIndex).trim();
+      if (block.trim()) {
+        blocks.push({
+          tag: tag,
+          block: block
+        });
+        startIndex = currPos;
+      }
     }
+    currPos++;
   }
   if (curl > 0) {
     throw new Error("Did you miss a curly?");
+  } else {
+    console.log("Compilation successful!");
   }
   return blocks;
 }
-
-console.log(tokener("header {\n div.header '}' } footer {\n div.footer }"));
+var blocks = tokener("html {\nheader {\ndiv.header '}'\n}\nfooter {\n div.footer \n} \n}");
+if (blocks.length) {
+  console.log(blocks[0].block.trim());
+  console.log(tokener(blocks[0].block.trim()));
+}
+//console.log(blocks);
