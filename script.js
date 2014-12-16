@@ -46,6 +46,7 @@ var tokener = function(str) {
     if (curl === 0 && startIndex > 0) {
       var block = str.substring(startIndex+1, currPos-1);
       var tag = str.substring(0, startIndex).trim();
+
       if (block.trim()) {
         blocks.push({
           tag: tag,
@@ -65,7 +66,7 @@ var tokener = function(str) {
 }
 var blocks = tokener("html {\nheader {\ndiv.header '}'\n}\nfooter {\n div.footer \n} \n}");
 if (blocks.length) {
-  console.log(blocks[0].block.trim());
-  console.log(tokener(blocks[0].block.trim()));
+  console.log(blocks);
+  //console.log(tokener(blocks[0].block.trim()));
 }
 //console.log(blocks);
