@@ -6,7 +6,7 @@ var tokener = function(str) {
   var ignoreUntil = false;
   var blocks = [];
   var lastNewLine = -1;
-
+  var lastCurlEnd = -1;
   while (stillSearching && currPos <= str.length) {
     var currChar = str.charAt(currPos);
     // console.log("Looking at: " + currPos + currChar);
@@ -45,15 +45,16 @@ var tokener = function(str) {
     }
     if (curl === 0 && startIndex > 0) {
       var block = str.substring(startIndex+1, currPos-1);
-      var tag = str.substring(0, startIndex).trim();
+      var tag = str.substring((lastCurlEnd === -1 ? 0 : lastCurlEnd+1), startIndex).trim();
 
       if (block.trim()) {
         blocks.push({
           tag: tag,
           block: block
         });
-        startIndex = currPos;
+        startIndex = -1;
       }
+      lastCurlEnd = currPos;
     }
     currPos++;
   }
@@ -65,8 +66,9 @@ var tokener = function(str) {
   return blocks;
 }
 var blocks = tokener("html {\nheader {\ndiv.header '}'\n}\nfooter {\n div.footer \n} \n}");
-if (blocks.length) {
-  console.log(blocks);
-  //console.log(tokener(blocks[0].block.trim()));
-}
 //console.log(blocks);
+
+var blocks2 = tokener("header {\ndiv.header '}'\n}\nfooter {\n div.footer \n}");
+console.log(blocks2);
+
+
