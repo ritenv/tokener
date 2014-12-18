@@ -60,13 +60,11 @@ Scanner.prototype = {
                 }
             }
             if (curl === 0 && startIndex > 0) {
-                var block = str.substring(startIndex + 1, currPos - 1);
+                var block = str.substring(startIndex + 1, currPos);
                 var tag = str.substring((lastCurlEnd === -1 ? 0 : lastCurlEnd + 1), startIndex).trim();
 
                 if (block.trim()) {
-                    blocks.push({
-                        block: block
-                    });
+                    blocks.push(block);
                     startIndex = -1;
                 }
                 lastCurlEnd = currPos;
@@ -113,4 +111,9 @@ Scanner.prototype = {
 }
 exports = scanner = new Scanner();
 
-console.log(scanner.scanAttribs('a#sample-button[href="#"][rel="lightbox"]'));
+var attribs = (scanner.scanAttribs('a#sample-button[href="#"][rel="lightbox"]'));
+console.log(attribs.blocks);
+console.log(attribs.blocks.join(" "));
+
+
+
