@@ -66,10 +66,10 @@ var scanner = function(str) {
     return blocks;
 }
 var blocks = scanner("html {\nheader#main.blue {\ndiv.header '}'\n}\nfooter {\n div.footer \n} \n}");
-console.log(blocks);
+//console.log(blocks);
 
 var blocks2 = scanner(blocks[0].block); //scanner("header {\ndiv.header '}'\n}\nfooter {\n div.footer \n}");
-console.log(blocks2);
+//console.log(blocks2);
 
 var blocks3 = scanner(blocks2[0].block); //scanner("header {\ndiv.header '}'\n}\nfooter {\n div.footer \n}");
-console.log(blocks3);
+//console.log(blocks3);
